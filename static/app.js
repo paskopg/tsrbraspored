@@ -217,6 +217,7 @@ async function refresh() {
 			fetch('api/holidays', { cache: 'no-store' }).then((r) => r.json()),
 			fetch('api/notices', { cache: 'no-store' }).then((r) => r.json()),
 		]);
+		window.appData = { today, tomorrow, schedule };
 		document.querySelector('#date').textContent = formatDate(today.date);
 		document.querySelector('#shift-a').innerHTML = renderShift(
 			'A',
@@ -239,19 +240,75 @@ async function refresh() {
 		document.querySelector('#shift-b').textContent = 'Raspored nije dostupan';
 	}
 }
+
+const toSec = (hhmm) => {
+	const [h, m] = hhmm.split(':').map(Number);
+	return h * 3600 + m * 60;
+};
+const fmtCountdown = (s) => {
+	const h = Math.floor(s / 3600);
+	const m = Math.floor((s % 3600) / 60);
+	const sec = s % 60;
+	const mm = String(m).padStart(2, '0');
+	const ss = String(sec).padStart(2, '0');
+	return h > 0 ? `${h}:${mm}:${ss}` : `${mm}:${ss}`;
+};
+const subjectAt = (shift, dayKey, index) => {
+	const data = window.appData;
+	const entry =
+		data &&
+		data.schedule.weeks[shift] &&
+		data.schedule.weeks[shift][dayKey] &&
+		data.schedule.weeks[shift][dayKey][index];
+	if (!entry) return '';
+	return typeof entry === 'object' ? entry['group' + selectedGroup] || '' : entry;
+};
+function countdownText() {
+	const data = window.appData;
+	if (!data) return '--:--:--';
+	const shift = data.today.shift;
+	const dayIdx = new Date(`${data.today.date}T12:00:00`).getDay();
+	if (!shift || dayIdx < 1 || dayIdx > 5) return 'Nema nastave';
+	const dayKey = weekdays[dayIdx - 1][0];
+	const periods = periodsByShift[shift];
+
+	const parts = new Intl.DateTimeFormat('en-GB', {
+		hour: '2-digit',
+		minute: '2-digit',
+		second: '2-digit',
+		hour12: false,
+		timeZone: 'Europe/Zagreb',
+	}).formatToParts(new Date());
+	const get = (t) => Number(parts.find((p) => p.type === t).value) % 24;
+	const now = get('hour') * 3600 + get('minute') * 60 + get('second');
+
+	// prije prvog sata
+	if (now < toSec(periods[0].start)) {
+		return `Do 1. sata: ${fmtCountdown(toSec(periods[0].start) - now)}`;
+	}
+	for (let i = 0; i < periods.length; i++) {
+		const start = toSec(periods[i].start);
+		const end = toSec(periods[i].end);
+		const next = periods[i + 1];
+		const nextSubject = next ? subjectAt(shift, dayKey, i + 1) : '';
+		const nextLabel = next ? ` | Sljedeće: ${nextSubject || 'slobodno'}` : ' | Zadnji sat';
+		if (now >= start && now < end) {
+			return `Do zvona: ${fmtCountdown(end - now)}${nextLabel}`;
+		}
+		if (next && now >= end && now < toSec(next.start)) {
+			return `Odmor: ${fmtCountdown(toSec(next.start) - now)} | Sljedeće: ${nextSubject || 'slobodno'}`;
+		}
+	}
+	return 'Nastava završena';
+}
+
 function tick() {
 	const now = new Date();
 	document.querySelector('#day').textContent = new Intl.DateTimeFormat('hr-HR', {
 		weekday: 'long',
 		timeZone: 'Europe/Zagreb',
 	}).format(now);
-	document.querySelector('#clock').textContent = new Intl.DateTimeFormat('hr-HR', {
-		hour: '2-digit',
-		minute: '2-digit',
-		second: '2-digit',
-		hour12: false,
-		timeZone: 'Europe/Zagreb',
-	}).format(now);
+	document.querySelector('#clock').textContent = countdownText();
 }
 tick();
 setInterval(tick, 1000);
