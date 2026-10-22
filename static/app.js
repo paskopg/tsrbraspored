@@ -7,7 +7,8 @@ const weekdays = [
 ];
 const shiftLabels = { A: 'Popodnevna', B: 'Jutarnja' };
 let selectedGroup = localStorage.getItem('tsrb_group') || 'A';
-let geoEnabled = false;
+let geoEnabled = localStorage.getItem('tsrb_geo') === 'true';
+console.log(geoEnabled);
 const periodsByShift = {
 	A: [
 		{ period: 0, start: '12:45', end: '13:30' },
