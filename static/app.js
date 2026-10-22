@@ -1,6 +1,6 @@
 const weekdays = [['monday', 'pon'], ['tuesday', 'uto'], ['wednesday', 'sri'], ['thursday', 'čet'], ['friday', 'pet']];
 const shiftLabels = { A: 'Popodnevna', B: 'Jutarnja' };
-let selectedGroup = 'A';
+let selectedGroup = localStorage.getItem('tsrb_group') || 'A';
 let geoEnabled = false;
 const periodsByShift = {
 	A: [
@@ -105,11 +105,22 @@ function renderShift(shift, schedule, today, tomorrow, holidays, notices) {
 	return `<div class="table-heading"><h2>${shiftLabels[shift]}</h2></div><div class="table-wrap"><table><thead><tr><th>sat</th><th>vrijeme</th>${weekdays.map(([key, label]) => `<th class="${key === currentColumn && activeShift ? 'today-header' : ''} ${key === tomorrowColumn && tomorrowActiveShift ? 'tomorrow-header' : ''} ${holidayColumns[key] && activeShift ? 'holiday-header' : ''}">${label}</th>`).join('')}</tr></thead><tbody>${rows}</tbody><tfoot><tr class="today-row"><td></td><td></td>${weekdays.map(([key]) => `<td class="${key === currentColumn && activeShift ? 'today' : ''} ${key === tomorrowColumn && tomorrowActiveShift ? 'tomorrow' : ''}">${key === currentColumn && activeShift ? 'DANAS' : key === tomorrowColumn && tomorrowActiveShift ? 'SUTRA' : ''}</td>`).join('')}</tr></tfoot></table></div>`;
 }
 function updateToggleButtons() { document.querySelectorAll('.group-button').forEach(button => button.classList.toggle('active', button.dataset.group === selectedGroup || (button.dataset.subject === 'Geo.' && geoEnabled))); }
-function setGroup(group) { selectedGroup = group; document.body.dataset.selectedGroup = group; updateToggleButtons(); }
-function toggleGeo() { geoEnabled = !geoEnabled; document.body.dataset.geoEnabled = geoEnabled ? 'true' : 'false'; updateToggleButtons(); }
+function setGroup(group) { 
+    selectedGroup = group; 
+    document.body.dataset.selectedGroup = group; 
+    localStorage.setItem('tsrb_group', group);
+    updateToggleButtons(); 
+}
+function toggleGeo() { 
+    geoEnabled = !geoEnabled; 
+    document.body.dataset.geoEnabled = geoEnabled ? 'true' : 'false'; 
+    localStorage.setItem('tsrb_geo', geoEnabled);
+    updateToggleButtons(); 
+}
 document.querySelectorAll('.group-button').forEach(button => button.addEventListener('click', () => button.dataset.subject ? toggleGeo() : setGroup(button.dataset.group)));
 setGroup(selectedGroup);
-document.body.dataset.geoEnabled = 'false';
+document.body.dataset.geoEnabled = geoEnabled ? 'true' : 'false';
+updateToggleButtons();
 async function refresh() { try { const [today, tomorrow, schedule, holidays, notices] = await Promise.all([fetch('api/today', { cache: 'no-store' }).then(r => r.json()), fetch('api/tomorrow', { cache: 'no-store' }).then(r => r.json()), fetch('api/schedule', { cache: 'no-store' }).then(r => r.json()), fetch('api/holidays', { cache: 'no-store' }).then(r => r.json()), fetch('api/notices', { cache: 'no-store' }).then(r => r.json())]); document.querySelector('#date').textContent = formatDate(today.date); document.querySelector('#shift-a').innerHTML = renderShift('A', schedule, today, tomorrow, holidays, notices); document.querySelector('#shift-b').innerHTML = renderShift('B', schedule, today, tomorrow, holidays, notices); } catch (error) { document.querySelector('#shift-a').textContent = 'Raspored nije dostupan'; document.querySelector('#shift-b').textContent = 'Raspored nije dostupan'; } }
 function tick() { const now = new Date(); document.querySelector('#day').textContent = new Intl.DateTimeFormat('hr-HR', { weekday: 'long', timeZone: 'Europe/Zagreb' }).format(now); document.querySelector('#clock').textContent = new Intl.DateTimeFormat('hr-HR', {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false, timeZone:'Europe/Zagreb'}).format(now); }
 tick(); setInterval(tick, 1000); refresh(); setInterval(refresh, 300000);
