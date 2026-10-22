@@ -1,28 +1,33 @@
 <!doctype html>
 <html lang="hr">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=900, initial-scale=0.5, minimum-scale=0.5, maximum-scale=3, user-scalable=yes">
-  <title>2.F Raspored</title>
-  <link rel="stylesheet" href="static/styles.css?v=period-width-41">
-</head>
-<body>
-  <main class="dashboard">
-    <header class="counter" aria-label="Trenutno vrijeme">
-      <div id="day" class="day">--</div>
-      <div id="clock" class="clock">--:--:--</div>
-      <div id="date" class="date">--</div>
-    </header>
-    <div class="group-toggle" aria-label="Odabir grupe">
-      <button type="button" class="group-button active" data-group="A">A</button>
-      <button type="button" class="group-button" data-group="B">B</button>
-      <button type="button" class="group-button" data-subject="Geo.">Prirodoslovlje</button>
-    </div>
-    <section class="schedule" aria-label="Tjedni raspored">
-      <div id="shift-a" class="shift-table"></div>
-      <div id="shift-b" class="shift-table"></div>
-    </section>
-  </main>
-  <script src="static/app.js?v=compat-26"></script>
-</body>
+	<head>
+		<meta charset="utf-8">
+		<meta
+			name="viewport"
+			content="width=900, initial-scale=0.5, minimum-scale=0.5, maximum-scale=3, user-scalable=yes"
+		>
+		<title>2.F Raspored</title>
+		<link rel="stylesheet" href="static/styles.css?v=period-width-41">
+	</head>
+	<body>
+		<main class="dashboard">
+			<header class="counter" aria-label="Trenutno vrijeme">
+				<div id="day" class="day">--</div>
+				<div id="clock" class="clock">--:--:--</div>
+				<div id="date" class="date">--</div>
+			</header>
+			<div class="group-toggle" aria-label="Odabir grupe">
+				<button type="button" class="group-button active" data-group="A">A</button>
+				<button type="button" class="group-button" data-group="B">B</button>
+				<button type="button" class="group-button" data-subject="Geo.">
+					Prirodoslovlje
+				</button>
+			</div>
+			<section class="schedule" aria-label="Tjedni raspored">
+				<div id="shift-a" class="shift-table"></div>
+				<div id="shift-b" class="shift-table"></div>
+			</section>
+		</main>
+		<script src="static/app.js?v=compat-26"></script>
+	</body>
 </html>
