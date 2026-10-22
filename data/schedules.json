@@ -1,0 +1,65 @@
+{
+  "class_name": "2.F",
+  "timezone": "Europe/Zagreb",
+  "shift_rule": "ISO tjedni",
+  "shift_map": {"odd": "A", "even": "B"},
+  "striped_periods": {
+    "A": {
+      "monday": [0, 1],
+      "tuesday": [2, 3],
+      "thursday": [6, 7],
+      "friday": [0,1,2,3]
+    },
+    "B": {
+      "monday": [0, 1, 6, 7],
+      "tuesday": [0,1,2, 3,6,7],
+      "wednesday": [0,1,6,7],
+      "thursday": [0,1],
+      "friday": [2,3]
+    }
+  },
+  "group_labels": {
+    "A": {
+      "monday": ["B", "B", "", "", "", "", "", ""],
+      "friday": ["A", "A", "A", "A", "", "", "", ""]
+    },
+    "B": {
+      "monday": ["A", "A", "", "", "", "", "B", "B"],
+      "wednesday": ["B", "B", "", "", "", "", "", ""],
+      "friday": ["", "", "", "", "", "", "", ""]
+    }    
+  },
+  "fortnight_groups": {
+    "B": {
+      "tuesday": {
+        "OT": ["B", "A"]
+      }
+    }
+  },
+  "bell_times": [
+    {"period": 1, "start": "08:00", "end": "08:45"},
+    {"period": 2, "start": "08:50", "end": "09:35"},
+    {"period": 3, "start": "09:50", "end": "10:35"},
+    {"period": 4, "start": "10:40", "end": "11:25"},
+    {"period": 5, "start": "11:30", "end": "12:15"},
+    {"period": 6, "start": "12:20", "end": "13:05"},
+    {"period": 7, "start": "13:10", "end": "13:55"}
+  ],
+  "weeks": {
+    "A": {
+      "monday": ["Prog.", "Prog.", "RDiTD", "Hrv.", "Hrv.", "SR", "Mat.", "Mat."],
+      "tuesday": ["TiPUiK", "Eti.", "MPiR", "MPiR", "DMS", "Geo.", "OBP", ""],
+      "wednesday": ["","TZK", "TZK", "Pov.", "OBP", "Hrv.", "Eng.", "UuRM"],
+      "thursday": ["", "Eng.", "Hrv.", "Prog.", "OMuR", "Mat.", {"groupA": "Prog.", "groupB": "TiPUiK"}, {"groupA": "Prog.", "groupB": "TiPUiK"}],
+      "friday": ["UuRM", "UuRM", "DMS", "DMS", "Prog.", "Mat.", "UuRM", "OMuR"]
+    },
+    "B": {
+      "monday": ["TiPUiK", "TiPUiK", "Mat.", "Mat.", "Prog.", "OT", "Prog.", "Prog.", ""],
+      "tuesday": ["OT", "OT", "MPiR", "MPiR", "Hrv.", "Eti.", {"groupA": "Prog.", "groupB": "DMS"}, {"groupA": "Prog.", "groupB": "DMS"}, ""],
+      "wednesday": ["UuRM", "UuRM", "Mat.", "TZK", "TZK", "Hrv.", "OBP", "OBP", ""],
+      "thursday": ["OMuR", "OMuR", "TiPUiK", "UuRM", "Pov.", "Hrv.", "Mat.", "Eng.", "DMS"],
+      "friday": ["Eng.", "SR", "RDiTD", "RDiTD", "UuRM", "Prog.", "Hrv.", "Geo.", ""]
+    }
+  },
+  "data_status": "Prazno"
+}
