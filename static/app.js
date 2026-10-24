@@ -217,7 +217,7 @@ async function refresh() {
 			fetch('api/holidays', { cache: 'no-store' }).then((r) => r.json()),
 			fetch('api/notices', { cache: 'no-store' }).then((r) => r.json()),
 		]);
-		window.appData = { today, tomorrow, schedule };
+		window.appData = { today, tomorrow, schedule, holidays};
 		document.querySelector('#date').textContent = formatDate(today.date);
 		document.querySelector('#shift-a').innerHTML = renderShift(
 			'A',
@@ -265,10 +265,19 @@ const subjectAt = (shift, dayKey, index) => {
 function countdownText() {
 	const data = window.appData;
 	if (!data) return '--:--:--';
+
 	const shift = data.today.shift;
-	const dayIdx = new Date(`${data.today.date}T12:00:00`).getDay();
-	if (!shift || dayIdx < 1 || dayIdx > 5) return 'Nema nastave';
-	const dayKey = weekdays[dayIdx - 1][0];
+    const dayIdx = new Date(`${data.today.date}T12:00:00`).getDay();
+
+
+    const holidayDates = (data.holidays?.holidays || []).map((h) => h.date);
+    const tripDates = (data.holidays?.trips || []).map((t) => t.date);
+    const isHolidayOrTrip =
+        holidayDates.includes(data.today.date) || tripDates.includes(data.today.date);
+
+    if (!shift || dayIdx < 1 || dayIdx > 5 || isHolidayOrTrip) return 'Nema nastave';
+    
+    const dayKey = weekdays[dayIdx - 1][0];
 	const periods = periodsByShift[shift];
 
 	const parts = new Intl.DateTimeFormat('en-GB', {
