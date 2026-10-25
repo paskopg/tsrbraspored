@@ -46,5 +46,6 @@
 		},
 		{ "date": "2027-08-15", "name": "Velika Gospa" }
 	],
+  
 	"trips": [{ "date": "2026-11-13", "name": "Minhen" }]
 }
