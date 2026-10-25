@@ -236,8 +236,7 @@ async function refresh() {
 			notices
 		);
 	} catch (error) {
-		document.querySelector('#shift-a').textContent = 'Raspored nije dostupan';
-		document.querySelector('#shift-b').textContent = 'Raspored nije dostupan';
+		document.querySelector('#shift-a').textContent = 'Raspored nije dostupan, kontaktirajte administratora (Pasko/Marin)';
 	}
 }
 

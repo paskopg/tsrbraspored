@@ -484,6 +484,14 @@ body {
 	gap: clamp(8px, 4vw, 120px);
 }
 
+/* Removed unecessary elements until further design decisions are made (Pasko) */
+.day {
+	display: none;
+}
+.date {
+	display: none;
+}
+
 .schedule {
 	max-width: 100%;
 	overflow-x: clip;
