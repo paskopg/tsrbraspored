@@ -97,7 +97,7 @@ function renderShift(shift, schedule, today, tomorrow, holidays, notices) {
 				noticeSidesByDay[key][index] = sides;
 				return entry;
 			}
-			return notice.kind === 'cancelled' ? '' : notice.subject;
+			return notice.kind === 'cancelled' ? entry : (notice.subject || entry);
 		});
 	});
 	const sameEntry = (left, right) =>
