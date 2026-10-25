@@ -292,7 +292,7 @@ function countdownText() {
 
 	// prije prvog sata
 	if (now < toSec(periods[0].start)) {
-		return `Do 1. sata: ${fmtCountdown(toSec(periods[0].start) - now)}`;
+		return `Do početnog sata: ${fmtCountdown(toSec(periods[0].start) - now)}`;
 	}
 	for (let i = 0; i < periods.length; i++) {
 		const start = toSec(periods[i].start);
