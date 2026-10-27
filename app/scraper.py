@@ -21,6 +21,7 @@ class ScheduleScraper:
         "UURM": "UuRM",
         "OMUR": "OMuR",
         "HRV": "Hrv.",
+        "MIR": "MPiR",
     }
 
     def __init__(self, url: str, timeout: tuple[int, int] = (5, 20)):
