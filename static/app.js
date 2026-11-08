@@ -147,17 +147,11 @@ function renderShift(shift, schedule, today, tomorrow, holidays, notices) {
 					? '<span class="trip-overlay">IZLET</span>'
 					: '';
 		const columnEnd = index + span >= periodsByShift[shift].length ? 'column-end' : '';
-		const lowerNotice =
-			!splitSubject &&
-			Array.from(
-				{ length: span - 1 },
-				(_, offset) => noticeCellsByDay[key][index + offset + 1]
-			).some(Boolean);
-		const noticeClass = lowerNotice
-			? 'notice-lower-half'
-			: noticeCellsByDay[key][index]
-				? 'notice-change'
-				: '';
+		const hasNotice = Array.from(
+			{ length: span },
+			(_, offset) => noticeCellsByDay[key][index + offset]
+		).some(Boolean);
+		const noticeClass = hasNotice ? 'notice-change' : '';
 		const cancelledMark = cancelled ? '<span class="cancelled-mark">X</span>' : '';
 		return `<td rowspan="${span}" class="${classes} ${subject || splitSubject || cancelled ? 'has-subject' : ''} ${splitSubject ? 'split-subject' : ''} ${groupClass} ${subjectClass} ${columnEnd} ${noticeClass} ${span > 1 ? 'merged-subject' : ''}">${contents}${cancelledMark}${holidayLabel}</td>`;
 	};
