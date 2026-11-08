@@ -66,6 +66,8 @@ function renderShift(shift, schedule, today, tomorrow, holidays, notices) {
 	const tomorrowActiveShift = tomorrow.shift === shift;
 	const holidayMiddleIndex = Math.floor(periodsByShift[shift].length / 2);
 	const subjectsByDay = {};
+	const dateShiftsByDay = {};
+	const shiftMap = schedule.shift_map || { odd: 'A', even: 'B' };
 	const noticeCellsByDay = {};
 	const cancelledCellsByDay = {};
 	const noticeSidesByDay = {};
@@ -74,6 +76,8 @@ function renderShift(shift, schedule, today, tomorrow, holidays, notices) {
 		const dayDate = new Date(`${today.date}T12:00:00`);
 		dayDate.setDate(dayDate.getDate() - todayIndex + weekdayIndex + 1);
 		const dateKey = dayDate.toISOString().slice(0, 10);
+		const dateShift = shiftMap[isoWeek(dateKey) % 2 ? 'odd' : 'even'];
+		dateShiftsByDay[key] = dateShift;
 		const baseSubjects = (schedule.weeks[shift] && schedule.weeks[shift][key]) || [];
 		noticeCellsByDay[key] = {};
 		cancelledCellsByDay[key] = {};
@@ -118,7 +122,7 @@ function renderShift(shift, schedule, today, tomorrow, holidays, notices) {
 				schedule.striped_periods[shift][key]) ||
 			[];
 		const striped = stripedPeriods.indexOf(index) !== -1;
-		const dateShiftActive = activeShift || (key === tomorrowColumn && tomorrowActiveShift);
+		const dateShiftActive = dateShiftsByDay[key] === shift;
 		const holidayForShift = dateShiftActive && holidayColumns[key];
 		const tripForShift = dateShiftActive && tripColumns[key];
 		const noticeSides = noticeSidesByDay[key][index] || [];

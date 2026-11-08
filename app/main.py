@@ -67,7 +67,15 @@ def today() -> dict:
 @app.get("/api/schedule")
 def full_schedule() -> dict:
     schedule, _ = dashboard_data()
-    return {"class_name": schedule["class_name"], "bell_times": schedule["bell_times"], "striped_periods": schedule.get("striped_periods", {}), "group_labels": schedule.get("group_labels", {}), "fortnight_groups": schedule.get("fortnight_groups", {}), "weeks": schedule["weeks"]}
+    return {
+        "class_name": schedule["class_name"],
+        "bell_times": schedule["bell_times"],
+        "shift_map": schedule["shift_map"],
+        "striped_periods": schedule.get("striped_periods", {}),
+        "group_labels": schedule.get("group_labels", {}),
+        "fortnight_groups": schedule.get("fortnight_groups", {}),
+        "weeks": schedule["weeks"],
+    }
 
 
 @app.get("/api/tomorrow")
