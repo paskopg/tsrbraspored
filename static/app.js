@@ -70,7 +70,6 @@ function renderShift(shift, schedule, today, tomorrow, holidays, notices) {
 	const shiftMap = schedule.shift_map || { odd: 'A', even: 'B' };
 	const noticeCellsByDay = {};
 	const cancelledCellsByDay = {};
-	const noticeSidesByDay = {};
 	const shiftNoticeNames = shift === 'A' ? ['POSLIJE PODNE'] : ['UJUTRO', 'PRIJE PODNE'];
 	weekdays.forEach(([key], weekdayIndex) => {
 		const dayDate = new Date(`${today.date}T12:00:00`);
@@ -81,8 +80,10 @@ function renderShift(shift, schedule, today, tomorrow, holidays, notices) {
 		const baseSubjects = (schedule.weeks[shift] && schedule.weeks[shift][key]) || [];
 		noticeCellsByDay[key] = {};
 		cancelledCellsByDay[key] = {};
-		noticeSidesByDay[key] = {};
 		subjectsByDay[key] = baseSubjects.map((entry, index) => {
+			const selectedSubject = entry && typeof entry === 'object'
+				? (selectedGroup === 'B' ? entry.groupB : entry.groupA)
+				: entry;
 			const period =
 				periodsByShift[shift][index] && String(periodsByShift[shift][index].period);
 			const notice = (notices.notices || []).find(
@@ -91,28 +92,18 @@ function renderShift(shift, schedule, today, tomorrow, holidays, notices) {
 					shiftNoticeNames.indexOf(item.shift) !== -1 &&
 					String(item.period).replace('.', '') === period
 			);
-			if (!notice) return entry;
+			if (!notice) return selectedSubject;
 			noticeCellsByDay[key][index] = true;
 			cancelledCellsByDay[key][index] = notice.kind === 'cancelled';
-			if (entry && typeof entry === 'object') {
-				const sides = [];
-				if (notice.kind === 'cancelled' || notice.subject === entry.groupA) sides.push('a');
-				if (notice.kind === 'cancelled' || notice.subject === entry.groupB) sides.push('b');
-				noticeSidesByDay[key][index] = sides;
-				return entry;
-			}
-			return notice.kind === 'cancelled' ? entry : (notice.subject || entry);
+			return notice.kind === 'cancelled' ? '' : (notice.subject || selectedSubject);
 		});
 	});
-	const sameEntry = (left, right) =>
-		left && right && typeof left === 'object' && typeof right === 'object'
-			? left.groupA === right.groupA && left.groupB === right.groupB
-			: left === right;
+	const sameEntry = (left, right) => left === right;
 	const renderSubjectCell = (key, index) => {
 		const subjects = subjectsByDay[key];
 		const entry = subjects[index] || '';
-		const splitSubject = entry && typeof entry === 'object';
-		const subject = splitSubject ? '' : entry;
+		const splitSubject = false;
+		const subject = entry;
 		if (index > 0 && sameEntry(entry, subjects[index - 1]) && entry) return '';
 		let span = 1;
 		while (entry && sameEntry(entry, subjects[index + span])) span += 1;
@@ -125,9 +116,8 @@ function renderShift(shift, schedule, today, tomorrow, holidays, notices) {
 		const dateShiftActive = dateShiftsByDay[key] === shift;
 		const holidayForShift = dateShiftActive && holidayColumns[key];
 		const tripForShift = dateShiftActive && tripColumns[key];
-		const noticeSides = noticeSidesByDay[key][index] || [];
 		const cancelled = cancelledCellsByDay[key][index];
-		const classes = `${key === currentColumn && activeShift ? 'today' : ''} ${key === tomorrowColumn && tomorrowActiveShift ? 'tomorrow' : ''} ${holidayForShift ? 'holiday' : ''} ${tripForShift ? 'trip' : ''} ${noticeCellsByDay[key][index] ? 'notice-change' : ''} ${cancelled ? 'cancelled-period' : ''} ${noticeSides.indexOf('a') !== -1 ? 'notice-split-a' : ''} ${noticeSides.indexOf('b') !== -1 ? 'notice-split-b' : ''} ${striped ? 'striped-subject' : ''}`;
+		const classes = `${key === currentColumn && activeShift ? 'today' : ''} ${key === tomorrowColumn && tomorrowActiveShift ? 'tomorrow' : ''} ${holidayForShift ? 'holiday' : ''} ${tripForShift ? 'trip' : ''} ${noticeCellsByDay[key][index] ? 'notice-change' : ''} ${cancelled ? 'cancelled-period' : ''} ${striped ? 'striped-subject' : ''}`;
 		const configuredGroup =
 			schedule.group_labels &&
 			schedule.group_labels[shift] &&
@@ -146,7 +136,7 @@ function renderShift(shift, schedule, today, tomorrow, holidays, notices) {
 			displayGroup === 'A' ? 'group-a-cell' : displayGroup === 'B' ? 'group-b-cell' : '';
 		const subjectClass = subject === 'Geo.' ? 'geo-subject' : '';
 		const contents = splitSubject
-			? `<span class="group-a">${entry.groupA}</span><span class="group-b">${entry.groupB}</span>`
+			? `<span class="group-a group-cell">${entry.groupA}</span><span class="group-b group-cell">${entry.groupB}</span>`
 			: subject;
 		const containsHolidayCenter =
 			index <= holidayMiddleIndex && index + span > holidayMiddleIndex;
@@ -190,11 +180,18 @@ function updateToggleButtons() {
 			)
 		);
 }
+function renderCurrentSchedule() {
+	const data = window.appData;
+	if (!data) return;
+	document.querySelector('#shift-a').innerHTML = renderShift('A', data.schedule, data.today, data.tomorrow, data.holidays, data.notices || { notices: [] });
+	document.querySelector('#shift-b').innerHTML = renderShift('B', data.schedule, data.today, data.tomorrow, data.holidays, data.notices || { notices: [] });
+}
 function setGroup(group) {
 	selectedGroup = group;
 	document.body.dataset.selectedGroup = group;
 	localStorage.setItem('tsrb_group', group);
 	updateToggleButtons();
+	renderCurrentSchedule();
 }
 function toggleGeo() {
 	geoEnabled = !geoEnabled;
@@ -221,7 +218,7 @@ async function refresh() {
 			fetch('api/holidays', { cache: 'no-store' }).then((r) => r.json()),
 			fetch('api/notices', { cache: 'no-store' }).then((r) => r.json()),
 		]);
-		window.appData = { today, tomorrow, schedule, holidays};
+		window.appData = { today, tomorrow, schedule, holidays, notices };
 		document.querySelector('#date').textContent = formatDate(today.date);
 		document.querySelector('#shift-a').innerHTML = renderShift(
 			'A',

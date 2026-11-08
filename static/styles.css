@@ -124,83 +124,6 @@ td {
 		100% 100%,
 		100% 1px;
 }
-.split-subject.notice-split-a::after,
-.split-subject.notice-split-b::after {
-	content: '';
-	position: absolute;
-	inset: 0;
-	z-index: 0;
-	background: rgba(230, 180, 35, 0.55);
-	pointer-events: none;
-}
-.split-subject.notice-split-a::after {
-	clip-path: polygon(0 0, 100% 0, 0 100%);
-}
-.split-subject.notice-split-b::after {
-	clip-path: polygon(100% 0, 100% 100%, 0 100%);
-}
-.split-subject {
-	position: relative;
-	min-height: 54px;
-	background-image: linear-gradient(
-		135deg,
-		transparent 49.3%,
-		#777 49.3%,
-		#777 50.7%,
-		transparent 50.7%
-	);
-}
-.split-subject .group-a,
-.split-subject .group-b {
-	position: absolute;
-	font-weight: normal;
-}
-.split-subject .group-a {
-	top: 8px;
-	left: 8px;
-}
-.split-subject .group-b {
-	right: 8px;
-	bottom: 8px;
-}
-.split-subject .group-a,
-.split-subject .group-b {
-	z-index: 1;
-}
-.group-mark {
-	margin-right: 4px;
-	color: #fff;
-	font-size: 10px;
-	font-weight: bold;
-	line-height: 1;
-	vertical-align: top;
-}
-.group-b .group-mark {
-	margin-left: 4px;
-	margin-right: 0;
-	vertical-align: bottom;
-}
-.group-mark-a,
-.group-mark-b {
-	display: inline-block;
-	margin: 0 4px 0 0;
-	color: #fff;
-	font-size: 10px;
-	font-weight: bold;
-	vertical-align: top;
-}
-.single-group {
-	position: relative;
-}
-.single-group-mark {
-	position: absolute;
-	right: 6px;
-	bottom: 4px;
-	color: #fff;
-	font-size: 10px;
-	font-weight: bold;
-	line-height: 1;
-}
 .merged-subject {
 	background-image: repeating-linear-gradient(to right, #555 0 2px, transparent 2px 5px);
 	background-position: center;
@@ -217,11 +140,6 @@ td {
 		100% 100%,
 		100% 1px;
 }
-.split-subject.merged-subject {
-	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cline x1='0' y1='100' x2='100' y2='0' stroke='%23666' stroke-width='0.7' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E");
-	background-size: 100% 100%;
-	background-repeat: no-repeat;
-}
 .striped-subject {
 	background-image:
 		repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.35) 0 8px, transparent 8px 16px),
@@ -231,16 +149,6 @@ td {
 	background-size:
 		auto,
 		100% 1px;
-}
-.split-subject.merged-subject.striped-subject {
-	background-image:
-		repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.35) 0 8px, transparent 8px 16px),
-		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cline x1='0' y1='100' x2='100' y2='0' stroke='%23666' stroke-width='0.7' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E");
-	background-position: center, center;
-	background-repeat: no-repeat;
-	background-size:
-		auto,
-		100% 100%;
 }
 thead th {
 	color: var(--white);
@@ -439,30 +347,6 @@ thead th.holiday-header {
 	letter-spacing: 3px;
 	pointer-events: none;
 }
-body[data-selected-group='A'] .split-subject .group-b {
-	color: #777;
-	opacity: 0.35;
-}
-body[data-selected-group='B'] .split-subject .group-a {
-	color: #777;
-	opacity: 0.35;
-}
-body[data-selected-group='A'] .split-subject::before,
-body[data-selected-group='B'] .split-subject::before {
-	content: '';
-	position: absolute;
-	inset: 0;
-	background: #222;
-	opacity: 0.72;
-	pointer-events: none;
-	z-index: 0;
-}
-body[data-selected-group='A'] .split-subject::before {
-	clip-path: polygon(100% 0, 100% 100%, 0 100%);
-}
-body[data-selected-group='B'] .split-subject::before {
-	clip-path: polygon(0 0, 100% 0, 0 100%);
-}
 /*tr.active { background: transparent; color: inherit; }
 tr.active .time, tr.active th { color: inherit; }
 tr.active, tr.active > th, tr.active > td { background: transparent !important; color: inherit !important; }*/
@@ -569,13 +453,4 @@ td {
 		font-size: clamp(18px, 6vw, 35px);
 	}
 
-	.split-subject .group-a {
-		top: 4px;
-		left: 4px;
-	}
-
-	.split-subject .group-b {
-		right: 4px;
-		bottom: 4px;
-	}
 }
