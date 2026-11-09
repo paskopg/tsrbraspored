@@ -81,9 +81,12 @@ function renderShift(shift, schedule, today, tomorrow, holidays, notices) {
 		noticeCellsByDay[key] = {};
 		cancelledCellsByDay[key] = {};
 		subjectsByDay[key] = baseSubjects.map((entry, index) => {
-			const selectedSubject = entry && typeof entry === 'object'
-				? (selectedGroup === 'B' ? entry.groupB : entry.groupA)
-				: entry;
+			const selectedSubject =
+				entry && typeof entry === 'object'
+					? selectedGroup === 'B'
+						? entry.groupB
+						: entry.groupA
+					: entry;
 			const period =
 				periodsByShift[shift][index] && String(periodsByShift[shift][index].period);
 			const notice = (notices.notices || []).find(
@@ -95,7 +98,7 @@ function renderShift(shift, schedule, today, tomorrow, holidays, notices) {
 			if (!notice) return selectedSubject;
 			noticeCellsByDay[key][index] = true;
 			cancelledCellsByDay[key][index] = notice.kind === 'cancelled';
-			return notice.kind === 'cancelled' ? '' : (notice.subject || selectedSubject);
+			return notice.kind === 'cancelled' ? '' : notice.subject || selectedSubject;
 		});
 	});
 	const sameEntry = (left, right) => left === right;
@@ -177,8 +180,62 @@ function updateToggleButtons() {
 function renderCurrentSchedule() {
 	const data = window.appData;
 	if (!data) return;
-	document.querySelector('#shift-a').innerHTML = renderShift('A', data.schedule, data.today, data.tomorrow, data.holidays, data.notices || { notices: [] });
-	document.querySelector('#shift-b').innerHTML = renderShift('B', data.schedule, data.today, data.tomorrow, data.holidays, data.notices || { notices: [] });
+	document.querySelector('#shift-a').innerHTML = renderShift(
+		'A',
+		data.schedule,
+		data.today,
+		data.tomorrow,
+		data.holidays,
+		data.notices || { notices: [] }
+	);
+	document.querySelector('#shift-b').innerHTML = renderShift(
+		'B',
+		data.schedule,
+		data.today,
+		data.tomorrow,
+		data.holidays,
+		data.notices || { notices: [] }
+	);
+}
+function renderCurrentSchedule() {
+	const data = window.appData;
+	if (!data) return;
+	document.querySelector('#shift-a').innerHTML = renderShift(
+		'A',
+		data.schedule,
+		data.today,
+		data.tomorrow,
+		data.holidays,
+		data.notices || { notices: [] }
+	);
+	document.querySelector('#shift-b').innerHTML = renderShift(
+		'B',
+		data.schedule,
+		data.today,
+		data.tomorrow,
+		data.holidays,
+		data.notices || { notices: [] }
+	);
+}
+function renderCurrentSchedule() {
+	const data = window.appData;
+	if (!data) return;
+	document.querySelector('#shift-a').innerHTML = renderShift(
+		'A',
+		data.schedule,
+		data.today,
+		data.tomorrow,
+		data.holidays,
+		data.notices || { notices: [] }
+	);
+	document.querySelector('#shift-b').innerHTML = renderShift(
+		'B',
+		data.schedule,
+		data.today,
+		data.tomorrow,
+		data.holidays,
+		data.notices || { notices: [] }
+	);
 }
 function setGroup(group) {
 	selectedGroup = group;
@@ -231,7 +288,8 @@ async function refresh() {
 			notices
 		);
 	} catch (error) {
-		document.querySelector('#shift-a').textContent = 'Raspored nije dostupan, kontaktirajte administratora (Pasko/Marin)';
+		document.querySelector('#shift-a').textContent =
+			'Raspored nije dostupan, kontaktirajte administratora (Pasko/Marin)';
 	}
 }
 
@@ -257,44 +315,48 @@ const subjectAt = (shift, dayKey, index) => {
 	if (!entry) return '';
 	return typeof entry === 'object' ? entry['group' + selectedGroup] || '' : entry;
 };
+
+const timeFormatter = new Intl.DateTimeFormat('en-GB', {
+	hour: '2-digit',
+	minute: '2-digit',
+	second: '2-digit',
+	hour12: false,
+	timeZone: 'Europe/Zagreb',
+});
+
 function countdownText() {
 	const data = window.appData;
 	if (!data) return '--:--:--';
 
 	const shift = data.today.shift;
-    const dayIdx = new Date(`${data.today.date}T12:00:00`).getDay();
+	const dayIdx = new Date(`${data.today.date}T12:00:00`).getDay();
 
+	const holidayDates = (data.holidays?.holidays || []).map((h) => h.date);
+	const tripDates = (data.holidays?.trips || []).map((t) => t.date);
+	const isHolidayOrTrip =
+		holidayDates.includes(data.today.date) || tripDates.includes(data.today.date);
 
-    const holidayDates = (data.holidays?.holidays || []).map((h) => h.date);
-    const tripDates = (data.holidays?.trips || []).map((t) => t.date);
-    const isHolidayOrTrip =
-        holidayDates.includes(data.today.date) || tripDates.includes(data.today.date);
+	if (!shift || dayIdx < 1 || dayIdx > 5 || isHolidayOrTrip) return 'Nema nastave';
 
-    if (!shift || dayIdx < 1 || dayIdx > 5 || isHolidayOrTrip) return 'Nema nastave';
-    
-    const dayKey = weekdays[dayIdx - 1][0];
+	const dayKey = weekdays[dayIdx - 1][0];
 	const periods = periodsByShift[shift];
 
-	const parts = new Intl.DateTimeFormat('en-GB', {
-		hour: '2-digit',
-		minute: '2-digit',
-		second: '2-digit',
-		hour12: false,
-		timeZone: 'Europe/Zagreb',
-	}).formatToParts(new Date());
-	const get = (t) => Number(parts.find((p) => p.type === t).value) % 24;
+	const parts = timeFormatter.formatToParts(new Date());
+	const get = (t) => Number(parts.find((p) => p.type === t)?.value || 0);
 	const now = get('hour') * 3600 + get('minute') * 60 + get('second');
 
 	// prije prvog sata
 	if (now < toSec(periods[0].start)) {
 		return `Do početnog sata: ${fmtCountdown(toSec(periods[0].start) - now)}`;
 	}
+
 	for (let i = 0; i < periods.length; i++) {
 		const start = toSec(periods[i].start);
 		const end = toSec(periods[i].end);
 		const next = periods[i + 1];
 		const nextSubject = next ? subjectAt(shift, dayKey, i + 1) : '';
 		const nextLabel = next ? ` | Sljedeće: ${nextSubject || 'slobodno'}` : ' | Zadnji sat';
+
 		if (now >= start && now < end) {
 			return `Do zvona: ${fmtCountdown(end - now)}${nextLabel}`;
 		}
