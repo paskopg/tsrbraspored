@@ -355,13 +355,13 @@ function countdownText() {
 		const end = toSec(periods[i].end);
 		const next = periods[i + 1];
 		const nextSubject = next ? subjectAt(shift, dayKey, i + 1) : '';
-		const nextLabel = next ? ` | Sljedeće: ${nextSubject || 'slobodno'}` : ' | Zadnji sat';
+		const nextLabel = next ? ` | Sljedeće: ${nextSubject || 'Slobodno'}` : ' | Zadnji sat';
 
 		if (now >= start && now < end) {
 			return `Do zvona: ${fmtCountdown(end - now)}${nextLabel}`;
 		}
 		if (next && now >= end && now < toSec(next.start)) {
-			return `Odmor: ${fmtCountdown(toSec(next.start) - now)} | Sljedeće: ${nextSubject || 'slobodno'}`;
+			return `Odmor: ${fmtCountdown(toSec(next.start) - now)} | Sljedeće: ${nextSubject || 'Slobodno'}`;
 		}
 	}
 	return 'Nastava završena';
