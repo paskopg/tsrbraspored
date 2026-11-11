@@ -71,6 +71,7 @@ def full_schedule() -> dict:
         "class_name": schedule["class_name"],
         "bell_times": schedule["bell_times"],
         "shift_map": schedule["shift_map"],
+        "notice_period_map": schedule.get("notice_period_map", {}),
         "striped_periods": schedule.get("striped_periods", {}),
         "group_labels": schedule.get("group_labels", {}),
         "fortnight_groups": schedule.get("fortnight_groups", {}),

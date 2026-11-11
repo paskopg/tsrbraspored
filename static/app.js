@@ -70,7 +70,6 @@ function renderShift(shift, schedule, today, tomorrow, holidays, notices) {
 	const shiftMap = schedule.shift_map || { odd: 'A', even: 'B' };
 	const noticeCellsByDay = {};
 	const cancelledCellsByDay = {};
-	const shiftNoticeNames = shift === 'A' ? ['POSLIJE PODNE'] : ['UJUTRO', 'PRIJE PODNE'];
 	weekdays.forEach(([key], weekdayIndex) => {
 		const dayDate = new Date(`${today.date}T12:00:00`);
 		dayDate.setDate(dayDate.getDate() - todayIndex + weekdayIndex + 1);
@@ -81,6 +80,7 @@ function renderShift(shift, schedule, today, tomorrow, holidays, notices) {
 		noticeCellsByDay[key] = {};
 		cancelledCellsByDay[key] = {};
 		subjectsByDay[key] = baseSubjects.map((entry, index) => {
+			const noticePeriodMap = (schedule.notice_period_map && schedule.notice_period_map[shift]) || {};
 			const selectedSubject =
 				entry && typeof entry === 'object'
 					? selectedGroup === 'B'
@@ -92,8 +92,8 @@ function renderShift(shift, schedule, today, tomorrow, holidays, notices) {
 			const notice = (notices.notices || []).find(
 				(item) =>
 					item.date === dateKey &&
-					shiftNoticeNames.indexOf(item.shift) !== -1 &&
-					String(item.period).replace('.', '') === period
+					dateShift === shift &&
+					(noticePeriodMap[String(item.period).replace('.', '')] || String(item.period).replace('.', '')) === period
 			);
 			if (!notice) return selectedSubject;
 			noticeCellsByDay[key][index] = true;
