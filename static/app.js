@@ -98,7 +98,7 @@ function renderShift(shift, schedule, today, tomorrow, holidays, notices) {
 			if (!notice) return selectedSubject;
 			noticeCellsByDay[key][index] = true;
 			cancelledCellsByDay[key][index] = notice.kind === 'cancelled';
-			return notice.kind === 'cancelled' ? '' : (notice.subject || selectedSubject);});
+			return notice.kind === 'cancelled' ? '' : (notice.subject || selectedSubject);
 	});
 	const sameEntry = (left, right) => left === right;
 	const renderSubjectCell = (key, index) => {
