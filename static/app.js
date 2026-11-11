@@ -100,6 +100,7 @@ function renderShift(shift, schedule, today, tomorrow, holidays, notices) {
 			cancelledCellsByDay[key][index] = notice.kind === 'cancelled';
 			return notice.kind === 'cancelled' ? '' : notice.subject || selectedSubject;
 	});
+	});
 	const sameEntry = (left, right) => left === right;
 	const renderSubjectCell = (key, index) => {
 		const subjects = subjectsByDay[key];
@@ -175,46 +176,6 @@ function updateToggleButtons() {
 					(button.dataset.subject === 'Geo.' && geoEnabled)
 			)
 		);
-}
-function renderCurrentSchedule() {
-	const data = window.appData;
-	if (!data) return;
-	document.querySelector('#shift-a').innerHTML = renderShift(
-		'A',
-		data.schedule,
-		data.today,
-		data.tomorrow,
-		data.holidays,
-		data.notices || { notices: [] }
-	);
-	document.querySelector('#shift-b').innerHTML = renderShift(
-		'B',
-		data.schedule,
-		data.today,
-		data.tomorrow,
-		data.holidays,
-		data.notices || { notices: [] }
-	);
-}
-function renderCurrentSchedule() {
-	const data = window.appData;
-	if (!data) return;
-	document.querySelector('#shift-a').innerHTML = renderShift(
-		'A',
-		data.schedule,
-		data.today,
-		data.tomorrow,
-		data.holidays,
-		data.notices || { notices: [] }
-	);
-	document.querySelector('#shift-b').innerHTML = renderShift(
-		'B',
-		data.schedule,
-		data.today,
-		data.tomorrow,
-		data.holidays,
-		data.notices || { notices: [] }
-	);
 }
 function renderCurrentSchedule() {
 	const data = window.appData;
